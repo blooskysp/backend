@@ -1,0 +1,17 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Simple App",
+  "license": "ISC",
+  "author": "n1kofl <nikoflsad@gmail.com>",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@types/yargs": "^17.0.34",
+    "chalk": "^4.1.2",
+    "yargs": "^18.0.0"
+  }
+}
