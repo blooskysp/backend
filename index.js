@@ -1,46 +1,56 @@
-const yargs = require('yargs/yargs');
-const { hideBin } = require('yargs/helpers');
+const express = require('express')
+const chalk = require('chalk')
+const {addNote, getNotes, removeNote, editNote} = require('./note.controller')
+const path = require("path");
 
-const { printNotes, addNote, removeNote} = require('./note.controller')
+const port = 3005
+const app = express()
 
-const argv = yargs(hideBin(process.argv));
+app.set('view engine', 'ejs')
+app.set('views', 'pages')
+app.use(express.json())
 
-argv.command({
-  command: 'add',
-  describe: 'Add new node to list',
-  builder: {
-    title: {
-      type: "string",
-      describe: 'Note title',
-      demandOption: true
-    }
-  },
-  async handler({ title }) {
-    await addNote(title)
-  }
-});
+app.use(express.static(path.resolve(__dirname, 'public')))
 
-argv.command({
-  command: 'list',
-  describe: 'Print all nodes',
-  async handler() {
-    await printNotes()
-  }
-});
+app.use(express.urlencoded({extended: true}))
 
-argv.command({
-  command: 'remove',
-  describe: 'Remove note by id',
-  builder: {
-    id: {
-      type: "string",
-      describe: 'Note id',
-      demandOption: true
-    }
-  },
-  async handler({ id }) {
-    await removeNote(id)
-  }
+app.get('/', async (req, res) => {
+  res.render('index', {
+    title: 'Express App',
+    notes: await getNotes(),
+    created: false
+  })
 })
 
-argv.parse();
+app.post('/', async (req, res) => {
+  await addNote(req.body.title)
+  res.render('index', {
+    title: 'Express App',
+    notes: await getNotes(),
+    created: true
+  })
+})
+
+app.delete('/:id', async (req, res) => {
+  await removeNote(req.params.id)
+  res.render('index', {
+    title: 'Express App',
+    notes: await getNotes(),
+    created: false
+  })
+})
+
+app.put('/:id', async (req, res) => {
+  const { id, title } = req.body
+  await editNote(id, title)
+
+  res.render('index', {
+    title: 'Express App',
+    notes: await getNotes(),
+    created: false
+  })
+})
+
+app.listen(port, () => {
+  console.log(chalk.green(`Server started on http://localhost:${port}`))
+})

@@ -49,6 +49,17 @@ async function removeNote(itemId) {
   console.log(chalk.red(`No one item with id - ${itemId}.`))
 }
 
+// ---------------------------------
+async function editNote(noteId, newTitle) {
+  const notes = await getNotes()
+
+  const note = notes.map((note) =>
+    note.id === noteId ? ({...note, title: newTitle}) : note
+  )
+
+  await fs.writeFile(notesPath, JSON.stringify(note) )
+}
+
 module.exports = {
-  addNote, printNotes, removeNote
+  addNote, getNotes, removeNote, editNote
 }
